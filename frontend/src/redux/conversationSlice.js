@@ -4,6 +4,7 @@ const conversationSlice=createSlice({
     name:"conversation",
     initialState:{
       conversations:[],
+      selectedConversation:null,
     },
     reducers:{
        setConversations:(state,action)=>{
