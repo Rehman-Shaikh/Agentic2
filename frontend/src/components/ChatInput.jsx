@@ -3,6 +3,11 @@ import {Paperclip, Mic, Send} from 'lucide-react'
 import { useSelector, useDispatch } from 'react-redux'
 import sendMessage from '../features/sendMessage'
 import { addMessage } from '../redux/messageSlice';
+import { createConversation } from '../features/createConversation'
+import { setSelectedConversation , addConversation, setConvTitle} from '../redux/conversationSlice';
+import { updateConversation } from '../features/updateConversation'
+
+
 
 
 
@@ -11,14 +16,34 @@ function ChatInput() {
   const { selectedConversation } = useSelector((state) => state.conversation);
   const dispatch = useDispatch();
   const handleSendMessage = async () => {
+
+    let conversation = selectedConversation;
+    if(!conversation) {
+      const conv = await createConversation();
+      dispatch(setSelectedConversation(conv));
+      dispatch(addConversation(conv));
+      conversation = conv
+    }
+    
+    if(conversation.title === "New Chat"){
+      await updateConversation(conversation?._id, value.trim());
+      dispatch(setConvTitle({
+        conversationId: conversation?._id,
+        title: value.trim()
+      }))
+      
+    }
+
     const payload = {
       prompt: value.trim(),
-      conversationId: selectedConversation?._id,
+      conversationId: conversation?._id,
     }
+
     dispatch(addMessage({ role: "user", content: value.trim() }));
     setValue("");
     const data = await sendMessage(payload);
     dispatch(addMessage({ role: "assistant", content: data || "Sorry, I couldn't process your request." }));
+    console.log("AI Response:", data);
   }
 
 

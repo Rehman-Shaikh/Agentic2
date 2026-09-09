@@ -13,13 +13,16 @@ function ChatArea() {
   useEffect(() => {
     const getMesg = async () => {
       if (selectedConversation) {
+        if(selectedConversation.title === "New Chat") {
+          return;
+        }
         dispatch(setMessages([])); // Reset messages on chat switch
         const data = await getMessages(selectedConversation._id); // Fix: _id instead of id
         dispatch(setMessages(data || []));
       }
     };
     getMesg();
-  }, [selectedConversation, dispatch]);
+  }, [selectedConversation?._id]);
 
   return (
     <div className='flex-1 flex flex-col h-full overflow-hidden'>
