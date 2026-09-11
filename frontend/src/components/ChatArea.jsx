@@ -1,31 +1,26 @@
-import React, { useEffect } from 'react'
-import Nav from './Nav'
-import MessageList from './MessageList'
-import ChatInput from './ChatInput'
-import { useSelector, useDispatch } from 'react-redux'
-import getMessages from '../features/getMessages'
-import { setMessages } from '../redux/messageSlice'
+import React, { useEffect } from "react";
+import Nav from "./Nav";
+import MessageList from "./MessageList";
+import ChatInput from "./ChatInput";
+import { useDispatch, useSelector } from "react-redux";
+import getMessages from "../features/getMessages";
+import { setMessages } from "../redux/messageSlice";
 
 function ChatArea() {
   const { selectedConversation } = useSelector((state) => state.conversation);
   const dispatch = useDispatch();
-
+  // ChatArea.jsx
   useEffect(() => {
     const getMesg = async () => {
-      if (selectedConversation) {
-        if(selectedConversation.title === "New Chat") {
-          return;
-        }
-        dispatch(setMessages([])); // Reset messages on chat switch
-        const data = await getMessages(selectedConversation._id); // Fix: _id instead of id
+      if (selectedConversation?._id) {
+        const data = await getMessages(selectedConversation._id);
         dispatch(setMessages(data || []));
       }
     };
     getMesg();
   }, [selectedConversation?._id]);
-
   return (
-    <div className='flex-1 flex flex-col h-full overflow-hidden'>
+    <div className="flex-1 flex flex-col min-w-0">
       <Nav />
       <MessageList />
       <ChatInput />

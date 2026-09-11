@@ -16,24 +16,19 @@ const conversationSlice=createSlice({
        setSelectedConversation:(state,action)=>{
         state.selectedConversation=action.payload
        },
-       setConvTitle:(state,action)=>{
-        const {title, conversationId}=action.payload
-        state.conversations=state.conversations.map((conv)=>{
-          conv._id==conversationId?(
-            {
-              ...conv,
-              title
-            }
-          ):conv
-        })
+       setConvTitle: (state, action) => {
+  const { title, conversationId } = action.payload;
+  state.conversations = state.conversations.map((conv) =>
+    conv._id === conversationId ? { ...conv, title } : conv
+  );
 
-        if(state.selectedConversation?._id==conversationId){
-          state.selectedConversation={
-            ...state.selectedConversation,
-            title
-          }
-        }
-       },
+  if (state.selectedConversation?._id === conversationId) {
+    state.selectedConversation = {
+      ...state.selectedConversation,
+      title,
+    };
+  }
+},
         
     }
    

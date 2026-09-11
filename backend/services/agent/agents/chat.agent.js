@@ -1,4 +1,8 @@
-import { SystemMessage, HumanMessage, AIMessage } from "@langchain/core/messages";
+import {
+  SystemMessage,
+  HumanMessage,
+  AIMessage,
+} from "@langchain/core/messages";
 import { getModel } from "../config/llmModels.js";
 import { getMemory } from "../config/memory.js";
 
@@ -7,7 +11,24 @@ export const chatAgent = async (state) => {
     const llm = await getModel("chat");
     const history = (await getMemory(state.conversationId)) || [];
 
+    const searchContext = state.searchResults
+      ? `
+   Web Search Results:
+
+${JSON.stringify(state.searchResults)}
+
+Answer the user using only the above search results.
+`
+      : "";
+
     const systemPrompt = `You are VertexAi, an intelligent AI assistant.
+    ${searchContext}
+     If searchContext exists:
+
+- Use search results to answer.
+- Do not mention internal tools.
+
+
 Rules:
 - For simple questions, greetings, and short queries, respond naturally in plain text.
 - For technical, educational, coding, or detailed topics, use clean Markdown.
@@ -26,6 +47,7 @@ Formatting:
 
     // Populate memory history safely
     history.forEach((msg) => {
+      if (!msg?.content) return; // skip corrupt/empty messages
       if (msg.role === "user") {
         messages.push(new HumanMessage(msg.content));
       } else if (msg.role === "assistant") {
@@ -43,7 +65,10 @@ Formatting:
 
     return {
       ...state,
-      aiResponse: typeof response.content === "string" ? response.content : JSON.stringify(response.content),
+      aiResponse:
+        typeof response.content === "string"
+          ? response.content
+          : JSON.stringify(response.content),
     };
   } catch (error) {
     console.error("Error in chatAgent:", error);
