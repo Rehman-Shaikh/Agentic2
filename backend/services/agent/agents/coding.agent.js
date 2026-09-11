@@ -45,6 +45,16 @@ Rules:
 - Beautiful spacing
 - Single page unless user asks otherwise.
 
+IMAGES
+==========================================================
+For all images, use this exact pattern with relevant keywords:
+https://source.unsplash.com/<width>x<height>/?<keyword1>,<keyword2>
+
+Example: https://source.unsplash.com/800x600/?coffee,shop
+Never invent specific unsplash.com/photo-xxxxx URLs — they may not exist.
+
+
+
 Return ONLY valid JSON.
 
 Schema:
@@ -81,8 +91,17 @@ ${state.prompt}`;
 
     const res = await llm.invoke(prompt);
     let data;
+
     try {
-      data = JSON.parse(res.content);
+      // 1. Markdown code blocks (```json ... ```) ko remove karein
+      const cleanedContent = res.content
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .replace(/\u00a0/g, " ") // Invisible non-breaking spaces ko fix karein
+        .trim();
+
+      // 2. Clear content ko parse karein
+      data = JSON.parse(cleanedContent);
     } catch (err) {
       console.error("Invalid JSON from coding agent:", res.content);
       return {
