@@ -7,4 +7,5 @@ export const agentState = Annotation.Root({
     conversationId: Annotation(),
     searchResults: Annotation(), // for tavily responce store
     images: Annotation(), // for tavily responce store
+    artifacts: Annotation(),
 })
