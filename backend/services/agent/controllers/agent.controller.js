@@ -5,6 +5,7 @@ import { addMessage } from "../config/memory.js"
 export const agent = async (req, res) => {
   try {
     const { prompt, conversationId, agent } = req.body
+    const file = req.file;
     
     await axios.post(`${process.env.CHAT_SERVICE}/save-message`, {
       conversationId,
@@ -14,7 +15,8 @@ export const agent = async (req, res) => {
     const result = await graph.invoke({
       prompt,
       conversationId,
-      agent
+      agent,
+      file
     })
 
     const response = result.aiResponse || "Sorry, I couldn't generate a response.";

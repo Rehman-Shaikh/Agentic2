@@ -8,4 +8,5 @@ export const agentState = Annotation.Root({
     searchResults: Annotation(), // for tavily responce store
     images: Annotation(), // for tavily responce store
     artifacts: Annotation(),
+    file: Annotation()
 })
