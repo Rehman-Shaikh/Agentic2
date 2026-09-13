@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import sendMessage from "../features/sendMessage";
-import { addMessage, setArtifacts } from "../redux/messageSlice";
+import { addMessage, setArtifacts, setIsLoading } from "../redux/messageSlice";
 import { createConversation } from "../features/createConversation";
 import {
   setSelectedConversation,
@@ -33,6 +33,7 @@ function ChatInput() {
 
 
   const handleSendMessage = async () => {
+    dispatch(setIsLoading(true))
     let conversation = selectedConversation;
     if (!conversation) {
       const conv = await createConversation();
@@ -63,6 +64,7 @@ function ChatInput() {
     dispatch(addMessage({ role: "user", content: value.trim() }));
     setValue("");
     const data = await sendMessage(formData);
+     dispatch(setIsLoading(false))
     setSelectedFile(null)
     dispatch(setArtifacts(data.artifacts || []));
     dispatch(
