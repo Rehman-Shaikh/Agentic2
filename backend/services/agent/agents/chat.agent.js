@@ -5,9 +5,11 @@ import {
 } from "@langchain/core/messages";
 import { getModel } from "../config/llmModels.js";
 import { getMemory } from "../config/memory.js";
+import { checkAgentLimit } from "../config/agentLimit.js";
 
 export const chatAgent = async (state) => {
   try {
+    await checkAgentLimit(state.userId, "chat");
     const llm = await getModel("chat");
     const history = (await getMemory(state.conversationId)) || [];
 
@@ -71,7 +73,10 @@ Formatting:
           : JSON.stringify(response.content),
     };
   } catch (error) {
-    console.error("Error in chatAgent:", error);
-    throw error;
+    console.log(error)
+        return{
+            ...state,
+            aiResponse:error?.data?.message || "Failed to generate response",
+        }
   }
 };
